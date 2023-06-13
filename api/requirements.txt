@@ -1,0 +1,4 @@
+fastapi
+uvicorn[standard]
+ormar[postgresql]
+alembic
