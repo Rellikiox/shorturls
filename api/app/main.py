@@ -1,13 +1,25 @@
-from fastapi import FastAPI
+"""App entrypoint for API endpoints"""
 
-app = FastAPI()
+from contextlib import asynccontextmanager
 
-
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
+import fastapi
+from app import api, models, redirects
 
 
-@app.get("/api/")
-async def api_root():
-    return {"message": "API Hello World"}
+@asynccontextmanager
+async def lifespan(app_: fastapi.FastAPI):
+    database_ = app_.state.database
+    if not database_.is_connected:
+        await database_.connect()
+
+    yield
+
+    database_ = app_.state.database
+    if database_.is_connected:
+        await database_.disconnect()
+
+
+app = fastapi.FastAPI(lifespan=lifespan)
+app.state.database = models.database
+app.include_router(api.router)
+app.include_router(redirects.router)

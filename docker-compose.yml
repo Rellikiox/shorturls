@@ -15,6 +15,7 @@ services:
     build: ./web/
     container_name: web
     labels:
+      # - "traefik.http.routers.web.rule=(Host(`www.laurl.es`) || Host(`laurl.es`) && Path(`/`))"
       - "traefik.http.routers.web.rule=(Path(`/`))"
       - "traefik.http.services.web.loadbalancer.server.port=80"
 
@@ -22,8 +23,15 @@ services:
     build: ./api/
     container_name: api
     labels:
-      - "traefik.http.routers.api.rule=(PathPrefix(`/api/`))"
+      # - "traefik.http.routers.api.rule=(Host(`laurl.es`) && Path(`/{url_part:.*}`))"
+      - "traefik.http.routers.api.rule=(Path(`/{url_part:.*}`))"
       - "traefik.http.services.api.loadbalancer.server.port=80"
+    volumes:
+      - "./api/app:/code/app"
+    environment:
+      DB_SERVER: ${DB_SERVER}
+      HASHIDS_SALT: ${HASHIDS_SALT}
+      SHORT_URL_HOST: ${SHORT_URL_HOST}
 
   db:
     image: postgres
