@@ -6,7 +6,7 @@ import hashids
 import databases
 import ormar
 import sqlalchemy
-from app.config import config
+from app import config
 
 database = databases.Database(config.db_server)
 metadata = sqlalchemy.MetaData()
@@ -37,6 +37,8 @@ async def create_short_url(url: str) -> str:
 
 
 async def get_original_url(short_url: str) -> str | None:
-    db_id = id_hasher.decode(short_url)[0]
-    entity = await ShortURL.objects.get(ShortURL.id == db_id)
+    db_id = id_hasher.decode(short_url)
+    if not db_id:
+        return None
+    entity = await ShortURL.objects.get(ShortURL.id == db_id[0])
     return entity.url if entity and entity.url else None

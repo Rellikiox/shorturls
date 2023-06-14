@@ -8,7 +8,7 @@ Here's an overview of which features are coming and their order
 
 ### v1.0: Generating short links
 
-A single frontend that explains what the site does, it's got an input field where you can put in a URL and it will give you back a shorter URL.
+A single frontend that explains what the site does, it's got an input field where you can put in a URL and it will give you back a short URL.
 
 
 ## App structure

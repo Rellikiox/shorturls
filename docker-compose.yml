@@ -12,19 +12,21 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock"
 
   web:
-    build: ./web/
+    image: nginx:alpine
     container_name: web
     labels:
       # - "traefik.http.routers.web.rule=(Host(`www.laurl.es`) || Host(`laurl.es`) && Path(`/`))"
-      - "traefik.http.routers.web.rule=(Path(`/`))"
+      - "traefik.http.routers.web.rule=(PathPrefix(`/`) && Host(`localhost`))"
       - "traefik.http.services.web.loadbalancer.server.port=80"
+    volumes:
+      - "./web/dist:/usr/share/nginx/html"
 
   api:
     build: ./api/
     container_name: api
     labels:
       # - "traefik.http.routers.api.rule=(Host(`laurl.es`) && Path(`/{url_part:.*}`))"
-      - "traefik.http.routers.api.rule=(Path(`/{url_part:.*}`))"
+      - "traefik.http.routers.api.rule=(Path(`/{url_part:.+}`) && Host(`local.api`))"
       - "traefik.http.services.api.loadbalancer.server.port=80"
     volumes:
       - "./api/app:/code/app"

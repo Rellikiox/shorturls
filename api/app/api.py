@@ -1,8 +1,7 @@
 """Posts API endpoints"""
 
 import fastapi
-from app import models, schemas
-from app.config import config
+from app import models, schemas, config
 import validators
 
 router = fastapi.APIRouter(prefix="/api/v1")
@@ -16,7 +15,7 @@ async def healthcheck() -> dict:
 @router.post("/shorten-url")
 async def create_post(body: schemas.ShortenURLRequest) -> schemas.ShortenURLResponse:
     short_url = await models.create_short_url(body.url)
-    short_url = f"{config.short_url_host}/{short_url}"
+    short_url = f"{config.short_url_scheme}{config.short_url_host}/{short_url}"
     return schemas.ShortenURLResponse(url=body.url, short_url=short_url)
 
 
